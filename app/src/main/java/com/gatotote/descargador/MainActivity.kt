@@ -1,6 +1,7 @@
 package com.gatotote.descargador
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -18,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,13 +44,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val urlInicial = intent?.getStringExtra("url")
+            ?: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
         setContent {
             val ctx = LocalContext.current
             val scheme = runCatching { dynamicDarkColorScheme(ctx) }
                 .getOrElse { dynamicLightColorScheme(ctx) }
             MaterialTheme(colorScheme = scheme) {
                 Scaffold(modifier = Modifier.fillMaxSize()) { inner ->
-                    SpikeScreen(Modifier.padding(inner))
+                    SpikeScreen(urlInicial, Modifier.padding(inner))
                 }
             }
         }
@@ -56,10 +60,10 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun SpikeScreen(modifier: Modifier = Modifier) {
+private fun SpikeScreen(urlInicial: String, modifier: Modifier = Modifier) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
-    var url by remember { mutableStateOf("https://www.youtube.com/watch?v=BaW_jenozKc") }
+    var url by remember { mutableStateOf(urlInicial) }
     var salida by remember { mutableStateOf("") }
     var trabajando by remember { mutableStateOf(false) }
 
@@ -90,8 +94,28 @@ private fun SpikeScreen(modifier: Modifier = Modifier) {
                     "ERROR\n${e.message}"
                 }
             }
+            Log.i("SPIKE", "cliente_android=$clienteAndroid\n$texto")
             salida = texto
             trabajando = false
+        }
+    }
+
+    // SPIKE: al abrir, actualiza yt-dlp y luego lanza las dos pruebas (capturar por logcat).
+    LaunchedEffect(Unit) {
+        if (DescargadorApp.motorListo) {
+            val upd = withContext(Dispatchers.IO) {
+                try {
+                    val st = YoutubeDL.getInstance()
+                        .updateYoutubeDL(ctx, YoutubeDL.UpdateChannel.STABLE)
+                    "update=$st  version=" + YoutubeDL.getInstance().version(ctx)
+                } catch (e: Throwable) {
+                    "update ERROR: ${e.message}"
+                }
+            }
+            Log.i("SPIKE", upd)
+            probar(false)
+            while (trabajando) kotlinx.coroutines.delay(300)
+            probar(true)
         }
     }
 
