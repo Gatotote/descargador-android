@@ -1,0 +1,4 @@
+<resources>
+    <!-- La UI real es Material 3 en Compose; este tema solo evita la ActionBar. -->
+    <style name="Theme.Descargador" parent="android:Theme.Material.NoActionBar" />
+</resources>
