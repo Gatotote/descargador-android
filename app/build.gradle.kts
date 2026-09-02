@@ -1,7 +1,14 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+}
+
+val firmaProps = Properties().apply {
+    val f = rootProject.file("keystore.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
 }
 
 android {
@@ -21,6 +28,27 @@ android {
         }
     }
 
+    signingConfigs {
+        if (firmaProps.getProperty("storeFile") != null) {
+            create("release") {
+                storeFile = rootProject.file(firmaProps.getProperty("storeFile"))
+                storePassword = firmaProps.getProperty("storePassword")
+                keyAlias = firmaProps.getProperty("keyAlias")
+                keyPassword = firmaProps.getProperty("keyPassword")
+            }
+        }
+    }
+
+    // Un APK por arquitectura (arm64 ≈ 60 MB) + uno universal con todas.
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("armeabi-v7a", "arm64-v8a", "x86_64")
+            isUniversalApk = true
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -28,6 +56,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+            signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
         }
     }
 
