@@ -19,16 +19,18 @@ data class EntradaHistorial(
     val estado: String,      // "ok" | "error"
     val detalle: String,     // ruta visible o mensaje de error
     val fecha: String,
+    val uri: String = "",    // content:// del archivo guardado (si estado == "ok")
 ) {
     fun toJson(): JSONObject = JSONObject().apply {
         put("titulo", titulo); put("url", url); put("tipo", tipo)
-        put("estado", estado); put("detalle", detalle); put("fecha", fecha)
+        put("estado", estado); put("detalle", detalle); put("fecha", fecha); put("uri", uri)
     }
 
     companion object {
         fun fromJson(o: JSONObject) = EntradaHistorial(
             o.optString("titulo"), o.optString("url"), o.optString("tipo", "video"),
             o.optString("estado", "ok"), o.optString("detalle"), o.optString("fecha"),
+            o.optString("uri"),
         )
     }
 }
@@ -59,9 +61,10 @@ class HistorialStore(private val ctx: Context) {
 
     suspend fun agregar(
         titulo: String, url: String, tipo: String, estado: String, detalle: String,
+        uri: String = "",
     ) = withContext(Dispatchers.IO) {
         val fecha = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date())
-        escribir(listOf(EntradaHistorial(titulo, url, tipo, estado, detalle, fecha)) + _entradas.value)
+        escribir(listOf(EntradaHistorial(titulo, url, tipo, estado, detalle, fecha, uri)) + _entradas.value)
     }
 
     suspend fun borrar(entrada: EntradaHistorial) = withContext(Dispatchers.IO) {

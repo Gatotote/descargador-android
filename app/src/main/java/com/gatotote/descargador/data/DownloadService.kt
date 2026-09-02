@@ -83,6 +83,7 @@ class DownloadService : Service() {
                 app.historial.agregar(
                     descargado.titulo.ifBlank { titulo }, url,
                     if (descargado.esAudio) "audio" else "video", "ok", guardado.rutaVisible,
+                    guardado.uri.toString(),
                 )
                 estado.value = EstadoTrabajo(
                     trabajando = false, progreso = 1f,
@@ -90,8 +91,14 @@ class DownloadService : Service() {
                 )
                 notificarFin("Descarga completada", descargado.titulo.ifBlank { titulo })
             } catch (t: Throwable) {
-                val msg = t.message?.lineSequence()?.lastOrNull { it.isNotBlank() }?.trim()
+                val bruto = t.message?.lineSequence()?.lastOrNull { it.isNotBlank() }?.trim()
                     ?: "Falló la descarga"
+                val msg = if (esBloqueoYouTube(bruto)) {
+                    "YouTube está bloqueando la descarga en móvil (control anti-bot). " +
+                        "Prueba «Actualizar yt-dlp» en Ajustes, o inténtalo más tarde."
+                } else {
+                    bruto
+                }
                 app.historial.agregar(
                     estado.value.titulo.ifBlank { url }, url,
                     if (opciones.soloAudio) "audio" else "video", "error", msg,
@@ -104,6 +111,13 @@ class DownloadService : Service() {
                 pararPrimerPlano()
             }
         }
+    }
+
+    private fun esBloqueoYouTube(msg: String): Boolean {
+        val m = msg.lowercase()
+        return "http error 403" in m || "sign in to confirm" in m ||
+            "player response" in m || "the page needs to be reloaded" in m ||
+            "only images are available" in m
     }
 
     private fun cancelarInterno() {

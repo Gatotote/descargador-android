@@ -5,6 +5,7 @@ import android.util.Log
 import com.gatotote.descargador.data.AjustesStore
 import com.gatotote.descargador.data.DownloadService
 import com.gatotote.descargador.data.HistorialStore
+import com.gatotote.descargador.data.YtdlpEngine
 import com.yausername.ffmpeg.FFmpeg
 import com.yausername.youtubedl_android.YoutubeDL
 import kotlinx.coroutines.CoroutineScope
@@ -13,6 +14,9 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class DescargadorApp : Application() {
 
@@ -40,7 +44,21 @@ class DescargadorApp : Application() {
             } finally {
                 inicializado.value = true
             }
+            if (motorListo) actualizarYtdlpUnaVezAlDia()
         }
+    }
+
+    /** Actualiza yt-dlp como máximo una vez al día, en segundo plano. */
+    private suspend fun actualizarYtdlpUnaVezAlDia() {
+        val hoy = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
+        val ult = ajustes.flujo.first().ultimaActualizacionYtdlp
+        if (ult.startsWith(hoy)) return
+        runCatching {
+            YtdlpEngine.actualizar(this)
+            ajustes.setUltimaActualizacion(
+                SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date()),
+            )
+        }.onFailure { Log.w("DescargadorApp", "Fallo al actualizar yt-dlp", it) }
     }
 
     companion object {

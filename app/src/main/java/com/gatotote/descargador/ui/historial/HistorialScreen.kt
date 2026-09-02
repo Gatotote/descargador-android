@@ -1,6 +1,10 @@
 package com.gatotote.descargador.ui.historial
 
 import android.app.Application
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,9 +16,11 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
@@ -38,6 +44,20 @@ fun HistorialScreen(
     vm: HistorialViewModel = viewModel(),
 ) {
     val lista by vm.entradas.collectAsStateWithLifecycle()
+    val ctx = LocalContext.current
+
+    fun abrir(e: EntradaHistorial) {
+        if (e.uri.isBlank()) return
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(Uri.parse(e.uri), if (e.tipo == "audio") "audio/*" else "video/*")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        try {
+            ctx.startActivity(intent)
+        } catch (_: ActivityNotFoundException) {
+            Toast.makeText(ctx, "No hay una app para abrir este archivo.", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     Column(modifier.fillMaxSize().padding(16.dp)) {
         if (lista.isEmpty()) {
@@ -65,7 +85,12 @@ fun HistorialScreen(
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
-                        TextButton(onClick = { vm.borrar(e) }) { Text("Borrar") }
+                        Row {
+                            if (e.estado == "ok" && e.uri.isNotBlank()) {
+                                TextButton(onClick = { abrir(e) }) { Text("Abrir") }
+                            }
+                            TextButton(onClick = { vm.borrar(e) }) { Text("Borrar") }
+                        }
                     }
                 }
             }
