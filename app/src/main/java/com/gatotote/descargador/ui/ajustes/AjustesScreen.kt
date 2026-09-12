@@ -7,14 +7,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -33,6 +30,11 @@ import com.gatotote.descargador.DescargadorApp
 import com.gatotote.descargador.data.Ajustes
 import com.gatotote.descargador.data.Calidad
 import com.gatotote.descargador.data.YtdlpEngine
+import com.gatotote.descargador.ui.theme.BotonNeon
+import com.gatotote.descargador.ui.theme.CabeceraPantalla
+import com.gatotote.descargador.ui.theme.FilaCalidad
+import com.gatotote.descargador.ui.theme.NeonCian
+import com.gatotote.descargador.ui.theme.SuperficieVidrio
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -56,7 +58,6 @@ class AjustesViewModel(app: Application) : AndroidViewModel(app) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AjustesScreen(
     modifier: Modifier = Modifier,
@@ -67,44 +68,66 @@ fun AjustesScreen(
     var estadoUpd by remember { mutableStateOf("") }
 
     Column(
-        modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+        modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 20.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text("Calidad por defecto", style = MaterialTheme.typography.titleSmall)
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-        ) {
-            Calidad.entries.forEach { c ->
-                FilterChip(
-                    selected = a.calidad == c,
-                    onClick = { vm.setCalidad(c) },
-                    label = { Text(c.etiqueta.substringBefore(" ")) },
+        CabeceraPantalla(
+            titulo = "Ajustes",
+            subtitulo = "Calidad por defecto y el motor yt-dlp.",
+        )
+
+        SuperficieVidrio(Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text("POR DEFECTO", style = MaterialTheme.typography.labelSmall, color = NeonCian)
+                FilaCalidad(
+                    calidad = a.calidad,
+                    soloAudio = a.soloAudio,
+                    enabled = true,
+                    onCalidad = vm::setCalidad,
+                    onSoloAudio = vm::setSoloAudio,
                 )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Switch(
+                        checked = a.soloAudio,
+                        onCheckedChange = vm::setSoloAudio,
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = NeonCian,
+                            checkedTrackColor = NeonCian.copy(alpha = 0.35f),
+                        ),
+                    )
+                    Text("  Solo audio (MP3) por defecto", style = MaterialTheme.typography.bodyMedium)
+                }
             }
         }
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Switch(checked = a.soloAudio, onCheckedChange = vm::setSoloAudio)
-            Text("  Solo audio (MP3) por defecto")
+        SuperficieVidrio(Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text("MOTOR YT-DLP", style = MaterialTheme.typography.labelSmall, color = NeonCian)
+                Text(
+                    "Versión: ${YtdlpEngine.version(ctx) ?: "?"}" +
+                        if (a.ultimaActualizacionYtdlp.isNotBlank()) "\nÚltima actualización: ${a.ultimaActualizacionYtdlp}" else "",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                BotonNeon("Actualizar yt-dlp", onClick = { vm.actualizarYtdlp { estadoUpd = it } }, modifier = Modifier.fillMaxWidth())
+                if (estadoUpd.isNotBlank()) {
+                    Text(estadoUpd, style = MaterialTheme.typography.bodySmall)
+                }
+            }
         }
 
-        Text("Motor yt-dlp", style = MaterialTheme.typography.titleSmall)
-        Text(
-            "Versión: ${YtdlpEngine.version(ctx) ?: "?"}" +
-                if (a.ultimaActualizacionYtdlp.isNotBlank()) "\nÚltima actualización: ${a.ultimaActualizacionYtdlp}" else "",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Button(onClick = { vm.actualizarYtdlp { estadoUpd = it } }) { Text("Actualizar yt-dlp") }
-        if (estadoUpd.isNotBlank()) {
-            Text(estadoUpd, style = MaterialTheme.typography.bodySmall)
+        SuperficieVidrio(Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text("ARCHIVOS", style = MaterialTheme.typography.labelSmall, color = NeonCian)
+                Text(
+                    "Los vídeos se guardan en Movies/Descargador y el audio en Music/Descargador.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
-
-        Text(
-            "Los vídeos se guardan en Movies/Descargador y el audio en Music/Descargador.",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
     }
 }

@@ -1,4 +1,8 @@
 <resources>
     <!-- La UI real es Material 3 en Compose; este tema solo evita la ActionBar. -->
-    <style name="Theme.Descargador" parent="android:Theme.Material.NoActionBar" />
+    <style name="Theme.Descargador" parent="android:Theme.Material.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowBackground">#070B14</item>
+    </style>
 </resources>
