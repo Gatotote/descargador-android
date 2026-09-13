@@ -15,6 +15,9 @@ def test_paginas_muestran_mifarma(monkeypatch, tmp_path: Path):
     assert inicio.status_code == 200
     assert b"MIFARMA" in inicio.data
     assert b"Mifarma" not in inicio.data
+    assert b"Punto de venta" in inicio.data
+    salud = cliente.get("/api").get_json()
+    assert salud == {"app": "MIFARMA", "status": "ok"}
     pos = cliente.get("/pos")
     assert pos.status_code == 200
     assert b"MIFARMA" in pos.data

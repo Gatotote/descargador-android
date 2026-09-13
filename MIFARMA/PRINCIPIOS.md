@@ -37,5 +37,6 @@ máquina de desarrollo debe quedar en `/home/gatotote/Clientes/MIFARMA`.
 
 ## Git
 
-- En el día a día del cliente, commits locales. No mezclar este árbol
-  con repos de proyectos personales.
+- Commits solo locales, en `/home/gatotote/Clientes/MIFARMA`.
+- Todavía nada en GitHub. Cuando haya repo, será **privado**. Nunca
+  público, y nunca mezclado con el descargador u otros proyectos.

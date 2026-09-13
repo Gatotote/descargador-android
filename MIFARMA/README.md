@@ -18,7 +18,8 @@ python3 -m venv .venv
 .venv/bin/python app.py
 ```
 
-Abre [http://127.0.0.1:5050](http://127.0.0.1:5050).
+Abre [http://127.0.0.1:5000](http://127.0.0.1:5000) — esa es la **interfaz**.
+`http://127.0.0.1:5000/api` solo responde JSON de salud (`app: MIFARMA`).
 
 Acceso en el escritorio (doble clic):
 

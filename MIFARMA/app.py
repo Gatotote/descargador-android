@@ -432,6 +432,12 @@ def api_estado(conexion):
     return jsonify({"ok": True, "marca": NOMBRE_MARCA, "caja_abierta": bool(t), "turno": dict(t) if t else None})
 
 
+@app.route("/api")
+def api_raiz():
+    """Respuesta corta de salud. La interfaz gráfica está en / ."""
+    return jsonify({"app": NOMBRE_MARCA, "status": "ok"})
+
+
 def _formulario_producto() -> dict:
     return {
         "codigo_barras": request.form.get("codigo_barras"),
