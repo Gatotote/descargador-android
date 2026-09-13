@@ -13,6 +13,15 @@
     <label>Nombre comercial
       <input value="{{ MARCA }}" readonly tabindex="-1">
     </label>
+    <label>Sucursal
+      <input name="sucursal" value="{{ config.sucursal }}">
+    </label>
+    <label>R.F.C.
+      <input name="rfc" value="{{ config.rfc }}">
+    </label>
+    <label>Régimen fiscal
+      <input name="regimen_fiscal" value="{{ config.regimen_fiscal }}">
+    </label>
     <label>Símbolo de moneda
       <input name="moneda" value="{{ config.moneda }}">
     </label>
@@ -22,8 +31,20 @@
     <label>Teléfono
       <input name="telefono" value="{{ config.telefono }}">
     </label>
+    <label>Siguiente folio
+      <input name="folio_inicial" value="{{ config.folio_inicial }}">
+    </label>
     <label class="ancho">Dirección
       <input name="direccion" value="{{ config.direccion }}">
+    </label>
+    <label>Facebook
+      <input name="facebook" value="{{ config.facebook }}">
+    </label>
+    <label>Usuario en ticket
+      <input name="usuario_ticket" value="{{ config.usuario_ticket }}">
+    </label>
+    <label class="ancho">Cliente de mostrador
+      <input name="cliente_mostrador" value="{{ config.cliente_mostrador }}">
     </label>
     <label class="ancho">Pie de ticket
       <input name="ticket_pie" value="{{ config.ticket_pie }}">

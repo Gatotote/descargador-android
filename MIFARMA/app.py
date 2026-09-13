@@ -320,9 +320,16 @@ def ajustes(conexion):
                 "nombre_farmacia": NOMBRE_MARCA,
                 "moneda": request.form.get("moneda") or "$",
                 "dias_alerta_caducidad": request.form.get("dias_alerta_caducidad") or "90",
-                "ticket_pie": request.form.get("ticket_pie") or "Gracias por su compra · MIFARMA",
+                "ticket_pie": request.form.get("ticket_pie") or "¡Gracias por su compra!",
                 "direccion": request.form.get("direccion") or "",
                 "telefono": request.form.get("telefono") or "",
+                "sucursal": request.form.get("sucursal") or "Plutarco Elias Calles",
+                "rfc": (request.form.get("rfc") or "").upper(),
+                "regimen_fiscal": request.form.get("regimen_fiscal") or "",
+                "facebook": request.form.get("facebook") or "MIFARMA CDMX",
+                "usuario_ticket": request.form.get("usuario_ticket") or "Administrador",
+                "folio_inicial": request.form.get("folio_inicial") or "22921",
+                "cliente_mostrador": (request.form.get("cliente_mostrador") or "PUBLICO EN GENERAL").upper(),
             },
         )
         flash("Ajustes guardados. El nombre comercial sigue siendo MIFARMA.", "ok")

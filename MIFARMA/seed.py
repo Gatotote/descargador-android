@@ -129,6 +129,6 @@ def sembrar_si_vacia(conexion: sqlite3.Connection) -> None:
         )
     conexion.execute(
         "INSERT INTO clientes (nombre, telefono, documento, notas) VALUES (?, ?, ?, ?)",
-        ("Público general", "", "", "Cliente de mostrador"),
+        ("PUBLICO EN GENERAL", "", "", "Cliente de mostrador"),
     )
     conexion.commit()

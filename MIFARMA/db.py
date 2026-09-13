@@ -158,11 +158,18 @@ def _sembrar_config(conexion: sqlite3.Connection) -> None:
     }
     por_defecto = {
         "nombre_farmacia": NOMBRE_MARCA,
+        "sucursal": "Plutarco Elias Calles",
+        "rfc": "HERA530330MQ4",
+        "regimen_fiscal": "601 - General de Ley Personas Morales",
         "moneda": "$",
         "dias_alerta_caducidad": "90",
-        "ticket_pie": "Gracias por su compra · MIFARMA",
-        "direccion": "",
-        "telefono": "",
+        "ticket_pie": "¡Gracias por su compra!",
+        "direccion": "Plutarco Elias Calles 1528, Col. Zacahuitzco",
+        "telefono": "5547992316",
+        "facebook": "MIFARMA CDMX",
+        "usuario_ticket": "Administrador",
+        "folio_inicial": "22921",
+        "cliente_mostrador": "PUBLICO EN GENERAL",
     }
     for clave, valor in por_defecto.items():
         if clave not in actuales:
@@ -170,6 +177,26 @@ def _sembrar_config(conexion: sqlite3.Connection) -> None:
                 "INSERT INTO config (clave, valor) VALUES (?, ?)",
                 (clave, valor),
             )
+        elif clave in {
+            "sucursal",
+            "rfc",
+            "regimen_fiscal",
+            "direccion",
+            "telefono",
+            "facebook",
+            "usuario_ticket",
+            "folio_inicial",
+            "cliente_mostrador",
+        } and not str(actuales.get(clave) or "").strip():
+            conexion.execute(
+                "UPDATE config SET valor = ? WHERE clave = ?",
+                (valor, clave),
+            )
+    if actuales.get("ticket_pie") in ("", "Gracias por su compra · MIFARMA"):
+        conexion.execute(
+            "UPDATE config SET valor = ? WHERE clave = 'ticket_pie'",
+            ("¡Gracias por su compra!",),
+        )
     # La marca no se diluye aunque alguien la haya escrito distinto.
     conexion.execute(
         "UPDATE config SET valor = ? WHERE clave = 'nombre_farmacia'",

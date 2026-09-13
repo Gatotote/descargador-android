@@ -85,8 +85,9 @@ def test_venta_requiere_caja_y_descuenta_stock(conexion):
             "recibido": 50,
         },
     )
-    assert detalle["venta"]["folio"].startswith("MIF-")
+    assert detalle["venta"]["folio"] == "22921"
     assert detalle["venta"]["total"] == 22
+    assert detalle["total_letras"] == "==(VEINTIDOS PESOS 00/100 M.N.)=="
     assert servicios.stock_producto(conexion, producto_id) == 40
 
 

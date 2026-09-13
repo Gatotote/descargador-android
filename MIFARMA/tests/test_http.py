@@ -36,5 +36,9 @@ def test_paginas_muestran_mifarma(monkeypatch, tmp_path: Path):
     ticket = cliente.get(f"/ventas/{cobro['detalle']['venta']['id']}")
     assert ticket.status_code == 200
     assert b"MIFARMA" in ticket.data
-    assert b"MIF-" in ticket.data
+    assert b"FOLIO:" in ticket.data
+    assert b"HERA530330MQ4" in ticket.data
+    assert b"PUBLICO EN GENERAL" in ticket.data
+    assert b"M.N." in ticket.data
     assert b"TypeError" not in ticket.data
+    assert b"lote " not in ticket.data

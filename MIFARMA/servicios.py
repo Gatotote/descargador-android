@@ -9,8 +9,14 @@ from pathlib import Path
 
 from config import DIAS_ALERTA_CADUCIDAD, NOMBRE_MARCA
 from db import dicts, uno
+from letras import monto_en_letras
 
 UNIDADES = ("caja", "blister", "unidad")
+UNIDAD_TICKET = {
+    "unidad": "Pieza",
+    "blister": "Blíster",
+    "caja": "Caja",
+}
 METODOS_PAGO = ("efectivo", "tarjeta", "transferencia", "mixto")
 TABLAS_RESPALDO = (
     "config",
@@ -224,17 +230,43 @@ def registrar_movimiento_caja(
 
 
 def siguiente_folio(conexion: sqlite3.Connection) -> str:
+    cfg = leer_config(conexion)
+    inicial = int(cfg.get("folio_inicial") or 1)
     fila = conexion.execute(
         "SELECT folio FROM ventas ORDER BY id DESC LIMIT 1"
     ).fetchone()
     if not fila:
-        numero = 1
-    else:
-        try:
-            numero = int(str(fila["folio"]).split("-")[-1]) + 1
-        except ValueError:
-            numero = 1
-    return f"MIF-{numero:06d}"
+        return str(inicial)
+    digitos = "".join(c for c in str(fila["folio"]) if c.isdigit())
+    ultimo = int(digitos) if digitos else 0
+    return str(max(ultimo + 1, inicial))
+
+
+def fecha_ticket(valor: str) -> str:
+    texto = str(valor or "")
+    try:
+        dt = datetime.strptime(texto[:19], "%Y-%m-%d %H:%M:%S")
+    except ValueError:
+        return texto
+    return dt.strftime("%d/%m/%Y %I:%M:%S %p")
+
+
+def lineas_para_ticket(items: list[dict]) -> list[dict]:
+    visibles = []
+    for item in items:
+        cantidad = int(item.get("cantidad") or 0)
+        if cantidad <= 0:
+            continue
+        visibles.append(
+            {
+                "descripcion": str(item.get("descripcion") or "").upper(),
+                "cantidad": cantidad,
+                "unidad": UNIDAD_TICKET.get(item.get("unidad"), item.get("unidad") or "Pieza"),
+                "precio": float(item.get("precio_unitario") or 0),
+                "total": float(item.get("total") or 0),
+            }
+        )
+    return visibles
 
 
 def registrar_venta(conexion: sqlite3.Connection, payload: dict) -> dict:
@@ -360,7 +392,21 @@ def venta_completa(conexion: sqlite3.Connection, venta_id: int) -> dict:
         cliente = uno(
             conexion.execute("SELECT * FROM clientes WHERE id = ?", (venta["cliente_id"],)).fetchone()
         )
-    return {"venta": venta, "lineas": items, "cliente": cliente, "marca": NOMBRE_MARCA}
+    cfg = leer_config(conexion)
+    lineas_ticket = lineas_para_ticket(items)
+    return {
+        "venta": venta,
+        "lineas": items,
+        "lineas_ticket": lineas_ticket,
+        "cliente": cliente,
+        "cliente_nombre": (cliente["nombre"] if cliente else cfg.get("cliente_mostrador") or "PUBLICO EN GENERAL"),
+        "marca": NOMBRE_MARCA,
+        "total_letras": monto_en_letras(float(venta["total"])),
+        "arts_vendidos": float(sum(int(i["cantidad"] or 0) for i in lineas_ticket)),
+        "fecha_ticket": fecha_ticket(venta["fecha"]),
+        "entregado": float(venta["recibido"] if venta["recibido"] is not None else venta["total"]),
+        "cambio": float(venta["cambio"] or 0),
+    }
 
 
 def buscar_productos(conexion: sqlite3.Connection, q: str, solo_activos: bool = True) -> list[dict]:

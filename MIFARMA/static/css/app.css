@@ -212,12 +212,50 @@ h3 { margin: 1rem 0 0.5rem; font-size: 1rem; }
 .aviso-caja { background: #f6e4e1; border-left: 3px solid var(--alarma); padding: 0.7rem 0.9rem; margin-bottom: 1rem; }
 .pista-teclado { color: var(--tinta-suave); font-size: 0.85rem; }
 
-.ticket-pagina { display: block; background: #fff; }
-.ticket-print { max-width: 320px; margin: 2rem auto; font-size: 0.95rem; }
-.ticket-print h1 { font-family: var(--serif); letter-spacing: 0.2em; text-align: center; }
-.ticket-print table { width: 100%; }
-.ticket-print .lote { color: #555; font-size: 0.8rem; }
-.ticket-print .total { font-weight: 700; font-size: 1.1rem; }
+.ticket-pagina {
+  display: block;
+  background: #ececec;
+  font-family: Arial, "Helvetica Neue", sans-serif;
+}
+.ticket-print {
+  width: 280px;
+  margin: 1.5rem auto;
+  background: #fff;
+  color: #111;
+  font-size: 11px;
+  line-height: 1.35;
+  text-align: center;
+  padding: 14px 12px 18px;
+}
+.ticket-print p { margin: 0.15rem 0; }
+.ticket-print .t-marca { font-weight: 700; margin-top: 0.35rem; }
+.ticket-print .t-izq { text-align: left; }
+.ticket-print .t-prod { font-weight: 700; padding-top: 0.35rem; }
+.ticket-print .t-total { font-weight: 700; margin-top: 0.45rem; }
+.ticket-print .t-letras { font-size: 10px; margin: 0.2rem 0 0.35rem; }
+.ticket-print .t-folio { margin: 0.45rem 0; font-weight: 700; }
+.ticket-print .t-pie { margin-top: 0.6rem; }
+.ticket-print .t-tabla { width: 100%; border-collapse: collapse; margin-top: 0.4rem; }
+.ticket-print .t-tabla th,
+.ticket-print .t-tabla td { font-size: 11px; font-weight: 400; padding: 0; }
+.ticket-print .t-tabla th { font-weight: 700; }
+.trebol {
+  width: 42px;
+  height: 46px;
+  margin: 0 auto 0.2rem;
+  position: relative;
+}
+.trebol span {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: #3f3f3f;
+  border-radius: 50%;
+}
+.trebol span:nth-child(1) { left: 13px; top: 2px; }
+.trebol span:nth-child(2) { left: 2px; top: 14px; }
+.trebol span:nth-child(3) { right: 2px; top: 14px; }
+.trebol span:nth-child(4) { left: 13px; top: 22px; }
 
 @media (max-width: 980px) {
   body { grid-template-columns: 1fr; }
@@ -227,5 +265,6 @@ h3 { margin: 1rem 0 0.5rem; font-size: 1rem; }
 
 @media print {
   .no-print { display: none; }
-  .ticket-print { margin: 0; }
+  .ticket-pagina { background: #fff; }
+  .ticket-print { margin: 0 auto; }
 }

@@ -29,6 +29,9 @@ máquina de desarrollo debe quedar en `/home/gatotote/Clientes/MIFARMA`.
 - Nombres de dominio en español: producto, lote, venta, caducidad, caja.
 - Una venta nunca deja stock negativo. Si no hay piezas, se rechaza.
 - Al vender se descuenta el lote que caduca primero (FEFO).
+- El ticket impreso sigue el formato del negocio (RFC, régimen 601,
+  total en letras, folio numérico, Facebook MIFARMA CDMX). No lleva
+  lote ni caducidad en el papel.
 
 ## Git
 
