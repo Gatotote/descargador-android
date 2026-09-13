@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block titulo %}{{ MARCA }} · Compras{% endblock %}
+{% block contenido %}
+<header class="encabezado">
+  <div>
+    <p class="kicker">Entradas</p>
+    <h1>Compras</h1>
+  </div>
+</header>
+
+<form method="post" class="formulario tarjeta" id="form-compra">
+  <div class="campos cuatro">
+    <label>Fecha <input name="fecha" type="date" value="{{ hoy }}"></label>
+    <label>Proveedor <input name="proveedor"></label>
+    <label>Folio <input name="folio"></label>
+    <label>Notas <input name="notas"></label>
+  </div>
+  <div class="campos cinco alta-linea">
+    <label>Producto
+      <select id="compra-producto">
+        <option value="">Elegir…</option>
+        {% for p in productos %}
+          <option value="{{ p.id }}">{{ p.nombre }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Lote <input id="compra-lote"></label>
+    <label>Caducidad <input id="compra-caducidad" type="date" value="{{ hoy }}"></label>
+    <label>Piezas <input id="compra-cantidad" type="number" min="1" value="1"></label>
+    <label>Costo <input id="compra-costo" type="number" min="0" step="0.01" value="0"></label>
+  </div>
+  <button type="button" class="boton" id="compra-agregar">Agregar renglón</button>
+  <ul id="compra-lineas" class="lineas"></ul>
+  <input type="hidden" name="items_json" id="items_json" value="[]">
+  <button class="boton principal" type="submit">Registrar compra</button>
+</form>
+
+<section class="tarjeta">
+  <h2>Últimas compras</h2>
+  <table class="tabla">
+    <thead><tr><th>Fecha</th><th>Proveedor</th><th>Folio</th><th>Total</th></tr></thead>
+    <tbody>
+      {% for c in compras %}
+        <tr>
+          <td>{{ c.fecha | fecha_corta }}</td>
+          <td>{{ c.proveedor or '—' }}</td>
+          <td>{{ c.folio or '—' }}</td>
+          <td>{{ config.moneda }}{{ c.total | dinero }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="4">Sin compras.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/compras.js') }}"></script>
+{% endblock %}

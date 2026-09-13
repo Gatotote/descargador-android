@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}{{ MARCA }}{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body>
+  <aside class="barra">
+    <a class="marca" href="{{ url_for('inicio') }}">
+      <span class="cruz" aria-hidden="true"></span>
+      <span class="nombre">{{ MARCA }}</span>
+      <span class="lema">Farmacia · archivo local</span>
+    </a>
+    <nav>
+      <a href="{{ url_for('inicio') }}" class="{{ 'activo' if request.endpoint == 'inicio' }}">Inicio</a>
+      <a href="{{ url_for('pos') }}" class="{{ 'activo' if request.endpoint == 'pos' }}">Punto de venta</a>
+      <a href="{{ url_for('inventario') }}" class="{{ 'activo' if request.endpoint in ('inventario', 'inventario_nuevo', 'inventario_editar') }}">Inventario</a>
+      <a href="{{ url_for('caducidades') }}" class="{{ 'activo' if request.endpoint == 'caducidades' }}">
+        Caducidades
+        {% if n_caducados or n_por_caducar %}
+          <em>{{ n_caducados + n_por_caducar }}</em>
+        {% endif %}
+      </a>
+      <a href="{{ url_for('compras') }}" class="{{ 'activo' if request.endpoint == 'compras' }}">Compras</a>
+      <a href="{{ url_for('clientes') }}" class="{{ 'activo' if request.endpoint == 'clientes' }}">Clientes</a>
+      <a href="{{ url_for('caja') }}" class="{{ 'activo' if request.endpoint == 'caja' }}">Caja</a>
+      <a href="{{ url_for('reportes') }}" class="{{ 'activo' if request.endpoint == 'reportes' }}">Reportes</a>
+      <a href="{{ url_for('ajustes') }}" class="{{ 'activo' if request.endpoint == 'ajustes' }}">Ajustes</a>
+    </nav>
+    <div class="estado-caja {{ 'abierta' if turno else 'cerrada' }}">
+      {% if turno %}
+        Caja abierta · fondo {{ config.moneda }}{{ turno.monto_inicial | dinero }}
+      {% else %}
+        Caja cerrada
+      {% endif %}
+    </div>
+  </aside>
+  <main class="lienzo">
+    {% with mensajes = get_flashed_messages(with_categories=true) %}
+      {% if mensajes %}
+        <ul class="avisos">
+          {% for cat, msg in mensajes %}
+            <li class="{{ cat }}">{{ msg }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    {% block contenido %}{% endblock %}
+  </main>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

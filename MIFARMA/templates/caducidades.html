@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block titulo %}{{ MARCA }} · Caducidades{% endblock %}
+{% block contenido %}
+<header class="encabezado">
+  <div>
+    <p class="kicker">Control sanitario</p>
+    <h1>Caducidades</h1>
+  </div>
+</header>
+
+<section class="tarjeta">
+  <h2>Vencidos</h2>
+  <table class="tabla">
+    <thead><tr><th>Producto</th><th>Lote</th><th>Caducidad</th><th>Piezas</th></tr></thead>
+    <tbody>
+      {% for lote in avisos.caducados %}
+        <tr class="grave">
+          <td>{{ lote.nombre }}</td>
+          <td>{{ lote.numero }}</td>
+          <td>{{ lote.caducidad | fecha_corta }}</td>
+          <td>{{ lote.cantidad }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="4">Ningún lote vencido con stock.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="tarjeta">
+  <h2>Por vencer</h2>
+  <table class="tabla">
+    <thead><tr><th>Producto</th><th>Lote</th><th>Caducidad</th><th>Piezas</th></tr></thead>
+    <tbody>
+      {% for lote in avisos.por_caducar %}
+        <tr>
+          <td>{{ lote.nombre }}</td>
+          <td>{{ lote.numero }}</td>
+          <td>{{ lote.caducidad | fecha_corta }}</td>
+          <td>{{ lote.cantidad }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="4">Nada por vencer en la ventana de alerta.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="tarjeta">
+  <h2>Stock bajo</h2>
+  <table class="tabla">
+    <thead><tr><th>Producto</th><th>Stock</th><th>Mínimo</th></tr></thead>
+    <tbody>
+      {% for p in avisos.stock_bajo %}
+        <tr>
+          <td>{{ p.nombre }}</td>
+          <td>{{ p.stock }}</td>
+          <td>{{ p.stock_minimo }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="3">Todo el catálogo activo está por encima del mínimo.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

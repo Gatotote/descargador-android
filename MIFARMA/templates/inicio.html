@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block titulo %}{{ MARCA }} · Inicio{% endblock %}
+{% block contenido %}
+<header class="encabezado">
+  <div>
+    <p class="kicker">Panel del día</p>
+    <h1>{{ MARCA }}</h1>
+  </div>
+  <a class="boton principal" href="{{ url_for('pos') }}">Ir a caja</a>
+</header>
+
+<section class="rejilla cifras">
+  <article>
+    <span>Ventas de hoy</span>
+    <strong>{{ config.moneda }}{{ resumen.ventas_hoy.total | dinero }}</strong>
+    <small>{{ resumen.ventas_hoy.n }} ticket{{ 's' if resumen.ventas_hoy.n != 1 }}</small>
+  </article>
+  <article>
+    <span>Productos activos</span>
+    <strong>{{ resumen.productos }}</strong>
+    <small>catálogo local</small>
+  </article>
+  <article class="{{ 'alerta' if n_stock_bajo }}">
+    <span>Stock bajo</span>
+    <strong>{{ n_stock_bajo }}</strong>
+    <small>en o bajo mínimo</small>
+  </article>
+  <article class="{{ 'alerta' if n_caducados or n_por_caducar }}">
+    <span>Caducidad</span>
+    <strong>{{ n_caducados }} / {{ n_por_caducar }}</strong>
+    <small>vencidos / por vencer</small>
+  </article>
+</section>
+
+<section class="dos-columnas">
+  <article class="tarjeta">
+    <h2>Turno</h2>
+    {% if resumen.turno %}
+      <p>Abierto desde {{ resumen.turno.abierto_en | fecha_corta }}.</p>
+      <p>Fondo inicial {{ config.moneda }}{{ resumen.turno.monto_inicial | dinero }}.</p>
+    {% else %}
+      <p>No hay turno abierto. Ábrelo en Caja antes de vender.</p>
+      <a class="boton" href="{{ url_for('caja') }}">Abrir caja</a>
+    {% endif %}
+  </article>
+  <article class="tarjeta">
+    <h2>Más vendido hoy</h2>
+    {% if resumen.top %}
+      <ol class="lista-simple">
+        {% for item in resumen.top %}
+          <li>
+            <span>{{ item.nombre }}</span>
+            <em>{{ item.piezas }} pzas · {{ config.moneda }}{{ item.total | dinero }}</em>
+          </li>
+        {% endfor %}
+      </ol>
+    {% else %}
+      <p>Aún no hay ventas registradas hoy.</p>
+    {% endif %}
+  </article>
+</section>
+
+{% if resumen.alertas.caducados or resumen.alertas.por_caducar or resumen.alertas.stock_bajo %}
+<section class="tarjeta">
+  <h2>Atención</h2>
+  <ul class="lista-alertas">
+    {% for lote in resumen.alertas.caducados[:6] %}
+      <li class="grave">{{ lote.nombre }} · lote {{ lote.numero }} caducó el {{ lote.caducidad | fecha_corta }} ({{ lote.cantidad }} pzas)</li>
+    {% endfor %}
+    {% for lote in resumen.alertas.por_caducar[:6] %}
+      <li>{{ lote.nombre }} · lote {{ lote.numero }} caduca {{ lote.caducidad | fecha_corta }} ({{ lote.cantidad }} pzas)</li>
+    {% endfor %}
+    {% for p in resumen.alertas.stock_bajo[:6] %}
+      <li>Stock bajo: {{ p.nombre }} · {{ p.stock }} pzas (mín. {{ p.stock_minimo }})</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+{% endblock %}

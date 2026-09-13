@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block titulo %}{{ MARCA }} · Clientes{% endblock %}
+{% block contenido %}
+<header class="encabezado">
+  <div>
+    <p class="kicker">Directorio</p>
+    <h1>Clientes</h1>
+  </div>
+</header>
+
+<form method="post" action="{{ url_for('clientes_nuevo') }}" class="formulario tarjeta">
+  <h2>Nuevo cliente</h2>
+  <div class="campos cuatro">
+    <label>Nombre <input name="nombre" required></label>
+    <label>Teléfono <input name="telefono"></label>
+    <label>Documento <input name="documento"></label>
+    <label>Notas <input name="notas"></label>
+  </div>
+  <button class="boton principal" type="submit">Guardar</button>
+</form>
+
+<table class="tabla">
+  <thead><tr><th>Nombre</th><th>Teléfono</th><th>Documento</th><th>Notas</th></tr></thead>
+  <tbody>
+    {% for c in clientes %}
+      <tr>
+        <td>{{ c.nombre }}</td>
+        <td>{{ c.telefono or '—' }}</td>
+        <td>{{ c.documento or '—' }}</td>
+        <td>{{ c.notas or '—' }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="4">Sin clientes todavía.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

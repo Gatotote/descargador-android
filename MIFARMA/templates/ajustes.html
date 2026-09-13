@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block titulo %}{{ MARCA }} · Ajustes{% endblock %}
+{% block contenido %}
+<header class="encabezado">
+  <div>
+    <p class="kicker">Solo esta computadora</p>
+    <h1>Ajustes</h1>
+  </div>
+</header>
+
+<form method="post" class="formulario tarjeta">
+  <div class="campos dos">
+    <label>Nombre comercial
+      <input value="{{ MARCA }}" readonly>
+    </label>
+    <label>Símbolo de moneda
+      <input name="moneda" value="{{ config.moneda }}">
+    </label>
+    <label>Días de alerta de caducidad
+      <input name="dias_alerta_caducidad" type="number" min="1" value="{{ config.dias_alerta_caducidad }}">
+    </label>
+    <label>Teléfono
+      <input name="telefono" value="{{ config.telefono }}">
+    </label>
+    <label class="ancho">Dirección
+      <input name="direccion" value="{{ config.direccion }}">
+    </label>
+    <label class="ancho">Pie de ticket
+      <input name="ticket_pie" value="{{ config.ticket_pie }}">
+    </label>
+  </div>
+  <p class="nota">El nombre {{ MARCA }} no se puede cambiar: queda en mayúsculas en tickets y pantallas.</p>
+  <button class="boton principal" type="submit">Guardar</button>
+</form>
+
+<section class="tarjeta">
+  <h2>Respaldo local</h2>
+  <p>Base actual: <code>{{ ruta_bd }}</code></p>
+  <p>Descarga un JSON con catálogo, lotes, ventas y caja. Restaurar reemplaza los datos de esta instalación.</p>
+  <p>
+    <a class="boton" href="{{ url_for('ajustes_respaldo') }}">Descargar respaldo</a>
+  </p>
+  <form method="post" action="{{ url_for('ajustes_restaurar') }}" enctype="multipart/form-data" class="formulario compacto">
+    <label>Restaurar JSON <input type="file" name="archivo" accept="application/json" required></label>
+    <button class="boton" type="submit">Restaurar</button>
+  </form>
+</section>
+{% endblock %}

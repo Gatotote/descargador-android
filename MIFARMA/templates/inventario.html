@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block titulo %}{{ MARCA }} · Inventario{% endblock %}
+{% block contenido %}
+<header class="encabezado">
+  <div>
+    <p class="kicker">Catálogo</p>
+    <h1>Inventario</h1>
+  </div>
+  <a class="boton principal" href="{{ url_for('inventario_nuevo') }}">Nuevo producto</a>
+</header>
+
+<form class="filtro" method="get">
+  <input type="search" name="q" value="{{ q }}" placeholder="Nombre, código, laboratorio…">
+  <button class="boton" type="submit">Buscar</button>
+</form>
+
+<table class="tabla">
+  <thead>
+    <tr>
+      <th>Producto</th>
+      <th>Código</th>
+      <th>Stock</th>
+      <th>Mín.</th>
+      <th>Precio unidad</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in productos %}
+      <tr class="{{ 'bajo' if p.stock <= p.stock_minimo }} {{ 'inactivo' if not p.activo }}">
+        <td>
+          <strong>{{ p.nombre }}</strong>
+          <small>{{ p.principio_activo }} · {{ p.laboratorio }}</small>
+          {% if p.es_demostracion %}<span class="chip">demostración</span>{% endif %}
+        </td>
+        <td>{{ p.codigo_barras or '—' }}</td>
+        <td>{{ p.stock }}</td>
+        <td>{{ p.stock_minimo }}</td>
+        <td>{{ config.moneda }}{{ p.precio_unidad | dinero }}</td>
+        <td><a href="{{ url_for('inventario_editar', producto_id=p.id) }}">Abrir</a></td>
+      </tr>
+    {% else %}
+      <tr><td colspan="6">No hay productos. Carga el catálogo o registra el primero.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

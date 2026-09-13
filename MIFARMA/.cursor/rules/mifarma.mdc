@@ -1,0 +1,6 @@
+# MIFARMA — farmacia del cliente, árbol aparte.
+
+- El nombre en pantalla, tickets y config es **MIFARMA** (mayúsculas).
+- Datos solo en `data/mifarma.db`. Sin nube.
+- No mezclar con otros proyectos de `/home/gatotote`.
+- Lógica de stock/FEFO/caja en `servicios.py`.

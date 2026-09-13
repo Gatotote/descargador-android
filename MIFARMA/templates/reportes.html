@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block titulo %}{{ MARCA }} · Reportes{% endblock %}
+{% block contenido %}
+<header class="encabezado">
+  <div>
+    <p class="kicker">Consulta local</p>
+    <h1>Reportes</h1>
+  </div>
+</header>
+
+<form class="filtro" method="get">
+  <label>Desde <input type="date" name="desde" value="{{ desde }}"></label>
+  <label>Hasta <input type="date" name="hasta" value="{{ hasta }}"></label>
+  <button class="boton" type="submit">Ver</button>
+</form>
+
+<section class="rejilla cifras">
+  <article>
+    <span>Total del periodo</span>
+    <strong>{{ config.moneda }}{{ total | dinero }}</strong>
+    <small>{{ ventas | length }} ventas</small>
+  </article>
+  {% for metodo, monto in por_metodo.items() %}
+    <article>
+      <span>{{ metodo }}</span>
+      <strong>{{ config.moneda }}{{ monto | dinero }}</strong>
+    </article>
+  {% endfor %}
+</section>
+
+<section class="tarjeta">
+  <h2>Productos del periodo</h2>
+  <table class="tabla">
+    <thead><tr><th>Producto</th><th>Piezas</th><th>Importe</th></tr></thead>
+    <tbody>
+      {% for p in top %}
+        <tr>
+          <td>{{ p.nombre }}</td>
+          <td>{{ p.piezas }}</td>
+          <td>{{ config.moneda }}{{ p.total | dinero }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="3">Sin movimientos en el rango.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="tarjeta">
+  <h2>Tickets</h2>
+  <table class="tabla">
+    <thead><tr><th>Folio</th><th>Fecha</th><th>Pago</th><th>Total</th></tr></thead>
+    <tbody>
+      {% for v in ventas %}
+        <tr>
+          <td><a href="{{ url_for('ticket', venta_id=v.id) }}">{{ v.folio }}</a></td>
+          <td>{{ v.fecha | fecha_corta }}</td>
+          <td>{{ v.metodo_pago }}</td>
+          <td>{{ config.moneda }}{{ v.total | dinero }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="4">No hay ventas en esas fechas.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block titulo %}{{ MARCA }} · {{ producto.nombre if producto else 'Nuevo producto' }}{% endblock %}
+{% block contenido %}
+<header class="encabezado">
+  <div>
+    <p class="kicker">Inventario</p>
+    <h1>{{ producto.nombre if producto else 'Nuevo producto' }}</h1>
+  </div>
+  <a class="boton sutil" href="{{ url_for('inventario') }}">Volver</a>
+</header>
+
+<form method="post" class="formulario tarjeta">
+  <div class="campos tres">
+    <label>Nombre
+      <input name="nombre" required value="{{ producto.nombre if producto else '' }}">
+    </label>
+    <label>Código de barras
+      <input name="codigo_barras" value="{{ producto.codigo_barras if producto else '' }}">
+    </label>
+    <label>Principio activo
+      <input name="principio_activo" value="{{ producto.principio_activo if producto else '' }}">
+    </label>
+    <label>Laboratorio
+      <input name="laboratorio" value="{{ producto.laboratorio if producto else '' }}">
+    </label>
+    <label>Categoría
+      <input name="categoria" value="{{ producto.categoria if producto else '' }}">
+    </label>
+    <label>Stock mínimo (piezas)
+      <input name="stock_minimo" type="number" min="0" value="{{ producto.stock_minimo if producto else 5 }}">
+    </label>
+    <label>Unidades por blíster
+      <input name="unidades_por_blister" type="number" min="1" value="{{ producto.unidades_por_blister if producto else 10 }}">
+    </label>
+    <label>Blíster por caja
+      <input name="blister_por_caja" type="number" min="1" value="{{ producto.blister_por_caja if producto else 1 }}">
+    </label>
+    <label>Costo
+      <input name="costo" type="number" min="0" step="0.01" value="{{ producto.costo if producto else 0 }}">
+    </label>
+    <label>Precio caja
+      <input name="precio_caja" type="number" min="0" step="0.01" value="{{ producto.precio_caja if producto else 0 }}">
+    </label>
+    <label>Precio blíster
+      <input name="precio_blister" type="number" min="0" step="0.01" value="{{ producto.precio_blister if producto else 0 }}">
+    </label>
+    <label>Precio unidad
+      <input name="precio_unidad" type="number" min="0" step="0.01" value="{{ producto.precio_unidad if producto else 0 }}">
+    </label>
+  </div>
+  <div class="checks">
+    <label><input type="checkbox" name="requiere_receta" {% if producto and producto.requiere_receta %}checked{% endif %}> Requiere receta</label>
+    {% if producto %}
+      <label><input type="checkbox" name="activo" value="1" {% if producto.activo %}checked{% endif %}> Activo</label>
+      <input type="hidden" name="activo_presente" value="1">
+    {% endif %}
+  </div>
+  {% if not producto %}
+    <h2>Primer lote (opcional)</h2>
+    <div class="campos cuatro">
+      <label>Lote <input name="lote_numero"></label>
+      <label>Caducidad <input name="lote_caducidad" type="date" value="{{ hoy }}"></label>
+      <label>Cantidad (piezas) <input name="lote_cantidad" type="number" min="0"></label>
+      <label>Costo unitario <input name="lote_costo" type="number" min="0" step="0.01"></label>
+    </div>
+  {% endif %}
+  <button class="boton principal" type="submit">Guardar</button>
+</form>
+
+{% if producto %}
+  <section class="tarjeta">
+    <h2>Lotes · stock {{ producto.stock }} pzas</h2>
+    <table class="tabla">
+      <thead>
+        <tr><th>Lote</th><th>Caducidad</th><th>Piezas</th><th>Costo</th></tr>
+      </thead>
+      <tbody>
+        {% for lote in producto.lotes %}
+          <tr class="{{ 'grave' if lote.caducidad < hoy }}">
+            <td>{{ lote.numero }}</td>
+            <td>{{ lote.caducidad | fecha_corta }}</td>
+            <td>{{ lote.cantidad }}</td>
+            <td>{{ config.moneda }}{{ lote.costo_unitario | dinero }}</td>
+          </tr>
+        {% else %}
+          <tr><td colspan="4">Sin lotes. Entra mercancía para poder vender.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <form method="post" action="{{ url_for('inventario_lote', producto_id=producto.id) }}" class="formulario compacto">
+      <h3>Entrada de lote</h3>
+      <div class="campos cuatro">
+        <label>Número <input name="numero" required></label>
+        <label>Caducidad <input name="caducidad" type="date" required value="{{ hoy }}"></label>
+        <label>Piezas <input name="cantidad" type="number" min="1" required></label>
+        <label>Costo <input name="costo_unitario" type="number" min="0" step="0.01" value="{{ producto.costo }}"></label>
+      </div>
+      <button class="boton" type="submit">Agregar lote</button>
+    </form>
+  </section>
+{% endif %}
+{% endblock %}

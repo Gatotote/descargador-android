@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block titulo %}{{ MARCA }} · Punto de venta{% endblock %}
+{% block contenido %}
+<header class="encabezado">
+  <div>
+    <p class="kicker">Mostrador</p>
+    <h1>Punto de venta</h1>
+  </div>
+  <p class="pista-teclado">Buscar · Enter agrega · F2 cobra</p>
+</header>
+
+{% if not turno %}
+  <div class="aviso-caja">
+    La caja está cerrada. <a href="{{ url_for('caja') }}">Ábrela</a> para registrar ventas.
+  </div>
+{% endif %}
+
+<section class="pos" data-moneda="{{ config.moneda }}" data-caja="{{ '1' if turno else '0' }}">
+  <div class="pos-izq">
+    <label class="busqueda">
+      <span>Buscar por nombre, principio activo o código</span>
+      <input id="busqueda" type="search" autocomplete="off" autofocus {% if not turno %}disabled{% endif %}>
+    </label>
+    <div id="resultados" class="resultados"></div>
+  </div>
+  <aside class="ticket">
+    <header>
+      <strong>{{ MARCA }}</strong>
+      <span>Ticket en curso</span>
+    </header>
+    <label>
+      Cliente
+      <select id="cliente">
+        <option value="">Público general</option>
+        {% for c in clientes %}
+          <option value="{{ c.id }}">{{ c.nombre }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <ul id="lineas" class="lineas"></ul>
+    <div class="totales">
+      <p><span>Subtotal</span><strong id="subtotal">{{ config.moneda }}0.00</strong></p>
+      <label>Descuento {{ config.moneda }} <input id="descuento" type="number" min="0" step="0.01" value="0"></label>
+      <p class="gran-total"><span>Total</span><strong id="total">{{ config.moneda }}0.00</strong></p>
+    </div>
+    <fieldset class="pago">
+      <legend>Pago</legend>
+      <label><input type="radio" name="metodo" value="efectivo" checked> Efectivo</label>
+      <label><input type="radio" name="metodo" value="tarjeta"> Tarjeta</label>
+      <label><input type="radio" name="metodo" value="transferencia"> Transferencia</label>
+      <label class="recibido">Recibido <input id="recibido" type="number" min="0" step="0.01"></label>
+      <p>Cambio <strong id="cambio">{{ config.moneda }}0.00</strong></p>
+    </fieldset>
+    <div class="acciones-pos">
+      <button type="button" id="btn-cobrar" class="boton principal" {% if not turno %}disabled{% endif %}>Cobrar (F2)</button>
+      <button type="button" id="btn-vaciar" class="boton sutil">Vaciar</button>
+    </div>
+  </aside>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/pos.js') }}"></script>
+{% endblock %}

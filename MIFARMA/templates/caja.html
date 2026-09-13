@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block titulo %}{{ MARCA }} · Caja{% endblock %}
+{% block contenido %}
+<header class="encabezado">
+  <div>
+    <p class="kicker">Turno</p>
+    <h1>Caja</h1>
+  </div>
+</header>
+
+{% if not turno %}
+  <form method="post" class="formulario tarjeta">
+    <input type="hidden" name="accion" value="abrir">
+    <h2>Abrir turno</h2>
+    <div class="campos dos">
+      <label>Fondo inicial
+        <input name="monto_inicial" type="number" min="0" step="0.01" value="0" required>
+      </label>
+      <label>Notas <input name="notas"></label>
+    </div>
+    <button class="boton principal" type="submit">Abrir caja</button>
+  </form>
+{% else %}
+  <section class="rejilla cifras">
+    <article>
+      <span>Esperado en caja</span>
+      <strong>{{ config.moneda }}{{ resumen.esperado | dinero }}</strong>
+      <small>fondo + efectivo + ingresos − egresos</small>
+    </article>
+    <article>
+      <span>Ventas del turno</span>
+      <strong>{{ config.moneda }}{{ resumen.total_ventas | dinero }}</strong>
+      <small>{{ resumen.ventas | length }} tickets</small>
+    </article>
+    <article>
+      <span>Efectivo / otros</span>
+      <strong>{{ config.moneda }}{{ resumen.efectivo | dinero }}</strong>
+      <small>otros {{ config.moneda }}{{ resumen.otros | dinero }}</small>
+    </article>
+  </section>
+
+  <div class="dos-columnas">
+    <form method="post" class="formulario tarjeta">
+      <input type="hidden" name="accion" value="movimiento">
+      <h2>Movimiento</h2>
+      <div class="campos tres">
+        <label>Tipo
+          <select name="tipo">
+            <option value="ingreso">Ingreso</option>
+            <option value="egreso">Egreso</option>
+          </select>
+        </label>
+        <label>Monto <input name="monto" type="number" min="0.01" step="0.01" required></label>
+        <label>Concepto <input name="concepto" required></label>
+      </div>
+      <button class="boton" type="submit">Registrar</button>
+    </form>
+    <form method="post" class="formulario tarjeta">
+      <input type="hidden" name="accion" value="cerrar">
+      <h2>Cerrar turno</h2>
+      <label>Efectivo contado
+        <input name="monto_declarado" type="number" min="0" step="0.01" required>
+      </label>
+      <label>Notas <input name="notas"></label>
+      <button class="boton" type="submit">Cerrar caja</button>
+    </form>
+  </div>
+
+  <section class="tarjeta">
+    <h2>Movimientos</h2>
+    <table class="tabla">
+      <thead><tr><th>Hora</th><th>Tipo</th><th>Concepto</th><th>Monto</th></tr></thead>
+      <tbody>
+        {% for m in resumen.movimientos %}
+          <tr>
+            <td>{{ m.fecha | fecha_corta }}</td>
+            <td>{{ m.tipo }}</td>
+            <td>{{ m.concepto }}</td>
+            <td>{{ config.moneda }}{{ m.monto | dinero }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+{% endif %}
+
+<section class="tarjeta">
+  <h2>Turnos recientes</h2>
+  <table class="tabla">
+    <thead><tr><th>Apertura</th><th>Cierre</th><th>Fondo</th><th>Declarado</th><th>Estado</th></tr></thead>
+    <tbody>
+      {% for t in historial %}
+        <tr>
+          <td>{{ t.abierto_en | fecha_corta }}</td>
+          <td>{{ t.cerrado_en | fecha_corta if t.cerrado_en else '—' }}</td>
+          <td>{{ config.moneda }}{{ t.monto_inicial | dinero }}</td>
+          <td>{{ config.moneda }}{{ t.monto_declarado | dinero if t.monto_declarado is not none else '—' }}</td>
+          <td>{{ t.estado }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

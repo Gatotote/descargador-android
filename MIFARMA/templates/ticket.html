@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>{{ MARCA }} {{ detalle.venta.folio }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body class="ticket-pagina">
+  <article class="ticket-print">
+    <h1>{{ MARCA }}</h1>
+    {% if config.direccion %}<p>{{ config.direccion }}</p>{% endif %}
+    {% if config.telefono %}<p>{{ config.telefono }}</p>{% endif %}
+    <p>{{ detalle.venta.folio }} · {{ detalle.venta.fecha | fecha_corta }}</p>
+    {% if detalle.cliente %}<p>Cliente: {{ detalle.cliente.nombre }}</p>{% endif %}
+    <table>
+      {% for item in detalle.items %}
+        {% if item.cantidad %}
+          <tr>
+            <td>{{ item.cantidad }} {{ item.unidad }} · {{ item.descripcion }}</td>
+            <td>{{ config.moneda }}{{ item.total | dinero }}</td>
+          </tr>
+        {% endif %}
+        <tr class="lote">
+          <td colspan="2">lote {{ item.lote_numero }} · cad {{ item.lote_caducidad | fecha_corta }} · {{ item.piezas }} pzas</td>
+        </tr>
+      {% endfor %}
+    </table>
+    <p>Subtotal {{ config.moneda }}{{ detalle.venta.subtotal | dinero }}</p>
+    {% if detalle.venta.descuento %}
+      <p>Descuento {{ config.moneda }}{{ detalle.venta.descuento | dinero }}</p>
+    {% endif %}
+    <p class="total">Total {{ config.moneda }}{{ detalle.venta.total | dinero }}</p>
+    <p>{{ detalle.venta.metodo_pago }}{% if detalle.venta.cambio is not none %} · cambio {{ config.moneda }}{{ detalle.venta.cambio | dinero }}{% endif %}</p>
+    <p>{{ config.ticket_pie }}</p>
+  </article>
+  <p class="no-print"><button onclick="window.print()">Imprimir</button> · <a href="{{ url_for('pos') }}">Volver al POS</a></p>
+</body>
+</html>
