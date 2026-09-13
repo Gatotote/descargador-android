@@ -157,6 +157,11 @@ h3 { margin: 1rem 0 0.5rem; font-size: 1rem; }
   background: #fff;
   width: 100%;
 }
+.formulario input[readonly] {
+  background: #efeae0;
+  color: var(--tinta);
+  cursor: default;
+}
 .formulario { display: grid; gap: 0.8rem; margin-bottom: 1rem; }
 .campos { display: grid; gap: 0.7rem; }
 .campos.dos { grid-template-columns: 1fr 1fr; }

@@ -360,7 +360,7 @@ def venta_completa(conexion: sqlite3.Connection, venta_id: int) -> dict:
         cliente = uno(
             conexion.execute("SELECT * FROM clientes WHERE id = ?", (venta["cliente_id"],)).fetchone()
         )
-    return {"venta": venta, "items": items, "cliente": cliente, "marca": NOMBRE_MARCA}
+    return {"venta": venta, "lineas": items, "cliente": cliente, "marca": NOMBRE_MARCA}
 
 
 def buscar_productos(conexion: sqlite3.Connection, q: str, solo_activos: bool = True) -> list[dict]:

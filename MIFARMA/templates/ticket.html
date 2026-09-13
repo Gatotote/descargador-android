@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
 </head>
 <body class="ticket-pagina">
+  <script>history.scrollRestoration = "manual"; window.scrollTo(0, 0);</script>
   <article class="ticket-print">
     <h1>{{ MARCA }}</h1>
     {% if config.direccion %}<p>{{ config.direccion }}</p>{% endif %}
@@ -13,7 +14,7 @@
     <p>{{ detalle.venta.folio }} · {{ detalle.venta.fecha | fecha_corta }}</p>
     {% if detalle.cliente %}<p>Cliente: {{ detalle.cliente.nombre }}</p>{% endif %}
     <table>
-      {% for item in detalle.items %}
+      {% for item in detalle.lineas %}
         {% if item.cantidad %}
           <tr>
             <td>{{ item.cantidad }} {{ item.unidad }} · {{ item.descripcion }}</td>
