@@ -8,6 +8,7 @@ from functools import wraps
 
 from flask import (
     Flask,
+    abort,
     flash,
     jsonify,
     redirect,
@@ -17,7 +18,16 @@ from flask import (
     url_for,
 )
 
-from config import CARPETA_RESPALDOS, HOST, NOMBRE_MARCA, PUERTO, RUTA_BD
+from config import (
+    CARPETA_RESPALDOS,
+    HOST,
+    NOMBRE_MARCA,
+    PUERTO,
+    RUTA_BD,
+    borrar_logo,
+    guardar_logo,
+    ruta_logo,
+)
 from db import conectar, dicts, preparar_bd
 from seed import sembrar_si_vacia
 from servicios import (
@@ -77,6 +87,7 @@ def comunes():
     try:
         cfg = leer_config(conexion)
         avisos = alertas(conexion)
+        logo = ruta_logo()
         return {
             "MARCA": NOMBRE_MARCA,
             "config": cfg,
@@ -85,6 +96,9 @@ def comunes():
             "n_por_caducar": len(avisos["por_caducar"]),
             "n_stock_bajo": len(avisos["stock_bajo"]),
             "hoy": date.today().isoformat(),
+            "logo_url": (
+                url_for("logo_farmacia") + f"?t={int(logo.stat().st_mtime)}" if logo else None
+            ),
         }
     finally:
         conexion.close()
@@ -308,6 +322,32 @@ def reportes(conexion):
 @pagina
 def ticket(conexion, venta_id):
     return render_template("ticket.html", detalle=venta_completa(conexion, venta_id))
+
+
+@app.route("/logo")
+def logo_farmacia():
+    archivo = ruta_logo()
+    if not archivo:
+        abort(404)
+    return send_file(archivo)
+
+
+@app.route("/ajustes/logo", methods=["POST"])
+@pagina
+def ajustes_logo(conexion):
+    if request.form.get("quitar"):
+        borrar_logo()
+        flash("Se quitó el logo. El ticket vuelve al trébol mientras llega el archivo digital.", "ok")
+        return redirect(url_for("ajustes"))
+    archivo = request.files.get("logo")
+    if not archivo or not archivo.filename:
+        raise ErrorNegocio("Elige un archivo de logo (PNG, JPG, WEBP, SVG o GIF).")
+    try:
+        guardar_logo(archivo.filename, archivo.read())
+    except ValueError as exc:
+        raise ErrorNegocio(str(exc)) from exc
+    flash("Logo guardado. Ya aparece en el ticket y en el menú.", "ok")
+    return redirect(url_for("ajustes"))
 
 
 @app.route("/ajustes", methods=["GET", "POST"])

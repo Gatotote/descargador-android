@@ -42,3 +42,7 @@ def test_paginas_muestran_mifarma(monkeypatch, tmp_path: Path):
     assert b"M.N." in ticket.data
     assert b"TypeError" not in ticket.data
     assert b"lote " not in ticket.data
+    assert b"trebol" in ticket.data
+    ajustes = cliente.get("/ajustes")
+    assert ajustes.status_code == 200
+    assert "Usar este logo".encode() in ajustes.data

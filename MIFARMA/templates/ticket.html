@@ -8,9 +8,13 @@
 <body class="ticket-pagina">
   <script>history.scrollRestoration = "manual"; window.scrollTo(0, 0);</script>
   <article class="ticket-print">
-    <div class="trebol" aria-hidden="true">
-      <span></span><span></span><span></span><span></span>
-    </div>
+    {% if logo_url %}
+      <img class="logo-ticket" src="{{ logo_url }}" alt="{{ MARCA }}">
+    {% else %}
+      <div class="trebol" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+      </div>
+    {% endif %}
     <p class="t-marca">{{ MARCA }} {{ config.sucursal }}</p>
     <p>R.F.C. {{ config.rfc }}</p>
     <p>Régimen Fiscal: {{ config.regimen_fiscal }}</p>

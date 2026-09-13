@@ -32,6 +32,8 @@ máquina de desarrollo debe quedar en `/home/gatotote/Clientes/MIFARMA`.
 - El ticket impreso sigue el formato del negocio (RFC, régimen 601,
   total en letras, folio numérico, Facebook MIFARMA CDMX). No lleva
   lote ni caducidad en el papel.
+- El logo digital se puede agregar cuando exista: Ajustes o
+  `data/logo.png`. Mientras tanto el ticket usa el trébol.
 
 ## Git
 

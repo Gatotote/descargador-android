@@ -36,6 +36,10 @@ En **Ajustes** se descarga un JSON con todo el catálogo, lotes, ventas y
 caja. El mismo archivo se puede restaurar. Copia también `data/mifarma.db`
 si quieres un respaldo binario.
 
+El logo del negocio se sube en Ajustes cuando lo tengan en digital
+(PNG o SVG). Queda en `data/logo.png` (u otra extensión) y aparece en
+el ticket. Hasta entonces se muestra el trébol.
+
 ## Destino en el equipo de trabajo
 
 Este árbol debe copiarse a `/home/gatotote/Clientes/MIFARMA` y no

@@ -4,3 +4,4 @@
 - Datos solo en `data/mifarma.db`. Sin nube.
 - No mezclar con otros proyectos de `/home/gatotote`.
 - Lógica de stock/FEFO/caja en `servicios.py`.
+- El logo digital se agrega cuando exista (`data/logo.png` o Ajustes).

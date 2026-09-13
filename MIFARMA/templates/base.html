@@ -12,7 +12,11 @@
 <body>
   <aside class="barra">
     <a class="marca" href="{{ url_for('inicio') }}">
-      <span class="cruz" aria-hidden="true"></span>
+      {% if logo_url %}
+        <img class="logo-marca" src="{{ logo_url }}" alt="{{ MARCA }}">
+      {% else %}
+        <span class="cruz" aria-hidden="true"></span>
+      {% endif %}
       <span class="nombre">{{ MARCA }}</span>
       <span class="lema">Farmacia · archivo local</span>
     </a>

@@ -55,6 +55,24 @@
 </form>
 
 <section class="tarjeta">
+  <h2>Logo del ticket</h2>
+  <p>Cuando tengas el archivo digital (PNG o SVG, de preferencia), súbelo aquí. Hasta entonces se usa el trébol. El archivo queda en esta computadora, en <code>data/logo.*</code>.</p>
+  {% if logo_url %}
+    <p class="vista-logo"><img src="{{ logo_url }}" alt="{{ MARCA }}"></p>
+  {% endif %}
+  <form method="post" action="{{ url_for('ajustes_logo') }}" enctype="multipart/form-data" class="formulario compacto">
+    <label>Archivo <input type="file" name="logo" accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif,.png,.jpg,.jpeg,.webp,.svg,.gif" required></label>
+    <button class="boton principal" type="submit">Usar este logo</button>
+  </form>
+  {% if logo_url %}
+    <form method="post" action="{{ url_for('ajustes_logo') }}" class="formulario compacto">
+      <input type="hidden" name="quitar" value="1">
+      <button class="boton sutil" type="submit">Quitar logo</button>
+    </form>
+  {% endif %}
+</section>
+
+<section class="tarjeta">
   <h2>Respaldo local</h2>
   <p>Base actual: <code>{{ ruta_bd }}</code></p>
   <p>Descarga un JSON con catálogo, lotes, ventas y caja. Restaurar reemplaza los datos de esta instalación.</p>
