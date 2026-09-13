@@ -20,6 +20,16 @@ python3 -m venv .venv
 
 Abre [http://127.0.0.1:5050](http://127.0.0.1:5050).
 
+Acceso en el escritorio (doble clic):
+
+```bash
+chmod +x abrir.sh instalar-acceso-escritorio.sh
+./instalar-acceso-escritorio.sh
+```
+
+Eso deja **MIFARMA** en `~/Desktop` y `~/Escritorio`. El acceso arranca el
+sistema si no está vivo y abre el navegador.
+
 La primera vez se crea la base y se cargan unos productos de demostración
 para poder probar la caja. Se pueden borrar desde Inventario.
 
